@@ -14,37 +14,9 @@ The pursuit of model generalization is dominated by two paradigms: geometric opt
 
 ## Motivation
 
-Modern deep learning demands models that are not only accurate but also robust and capable of quantifying uncertainty. The failures of the BCMEM project (see review) highlighted that conceptual novelty without rigorous, large-scale validation is insufficient. Artemis is designed from the ground up to address these challenges by creating a single, efficient algorithm that targets robust, generalizable, and theoretically-grounded solutions.
+Modern deep learning demands models that are not only accurate but also robust and capable of quantifying uncertainty. The failures of the [BCMEM](https://github.com/S-Sairam/bcmem) project (see review) highlighted that conceptual novelty without rigorous, large-scale validation is insufficient. Artemis is designed from the ground up to address these challenges by creating a single, efficient algorithm that targets robust, generalizable, and theoretically-grounded solutions.
 
 ## Core Idea & Mathematical Formulation (Work in Progress)
-
-Artemis reframes optimization as tracking the true optimal parameters `θ` using noisy gradient measurements `g`.
-
-### Kalman Filter Framework
-
-1.  **State Representation:** We maintain a Gaussian belief over the optimal parameters `θ_t` at time `t`, represented by `N(μ_t, P_t)`.
-    *   `μ_t`: Mean of the parameter belief (our current parameter estimate).
-    *   `P_t`: Covariance matrix of the parameter belief.
-
-2.  **State Transition (Prediction):**
-    The true parameters are assumed to evolve according to:
-    `θ_t = θ_{t-1} + w_t`, where `w_t ~ N(0, Q_t)`.
-    *   `μ_t_prior = μ_{t-1}`
-    *   `P_t_prior = P_{t-1} + Q_t`
-
-3.  **Measurement Update (Correction):**
-    We observe the noisy gradient `g_t` at `μ_t_prior`. The measurement model is:
-    `g_t = H_t θ_t + v_t`, where `v_t ~ N(0, R_t)`.
-    *   **Kalman Gain (`K_t`):** `K_t = P_t_prior (P_t_prior + R_t)^{-1}`
-    *   **Updated Mean (`μ_t`):** `μ_t = μ_t_prior - K_t (g_t)`
-    *   **Updated Covariance (`P_t`):** `P_t = (I - K_t) P_t_prior`
-
-### Geometric Annealing Protocol (Key Contribution)
-
-Our core innovation lies in dynamically scheduling the covariance parameter `κ`, which directly influences `R_t` (measurement noise) and `Q_t` (process noise). `κ` governs the "width" of the posterior belief and, by extension, the optimizer's perceived geometry of the loss landscape.
-
-*   **High `κ` (Early Stages/Exploration):** Encourages exploration of flatter minima, similar to SAM's robust region search.
-*   **Low `κ` (Later Stages/Convergence):** Leads to a sharper posterior, allowing for precise convergence.
 
 ## Proposed Architecture & Implementation Plan
 
